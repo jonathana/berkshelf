@@ -79,7 +79,11 @@ module Berkshelf
     #
     # @return [String]
     def berkshelf_path
-      ENV["BERKSHELF_PATH"] || DEFAULT_STORE_PATH
+      local_dot_berksfile_path = lambda {
+        local_berksfile_path = Pathname.new(Dir.pwd + '/.berkshelf')
+        File.directory?(local_berksfile_path) && local_berksfile_path
+      }
+      @berkshelf_path ||= local_dot_berksfile_path[] || ENV["BERKSHELF_PATH"] || DEFAULT_STORE_PATH
     end
 
     # Check if we're running a version of Chef that is in the 11.x line
